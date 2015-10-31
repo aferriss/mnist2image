@@ -1,0 +1,1 @@
+Script for extracting all images out of the mnist data
