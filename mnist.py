@@ -5,6 +5,9 @@ from pylab import *
 from numpy import *
 from PIL import Image
 
+# data from  http://yann.lecun.com/exdb/mnist/
+#sliced from here http://g.sweyla.com/blog/2012/mnist-numpy/
+
 def load_mnist(dataset="training", digits=np.arange(10), path='.'):
 	fname_img = os.path.join(path, 'train-images-idx3-ubyte')
 
