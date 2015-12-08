@@ -35,33 +35,56 @@ def load_mnist(dataset="training", digits=np.arange(10), path='.'):
 		labels[i] = lbl[ind[i]]
 	return images, labels
 
-curdigit = 0
-for num in range(10):
-	images, labels = load_mnist('training', digits=[num])
 
-	#for i in range(60000):
-	#	im = Image.fromarray(images[i])
-	#	im.save("sheets/img"+str(i)+".jpg")
-	largeImage = Image.new("L", (2500,2500))
-	y = 0
+def load_mnist_unlabeled(dataset="training", path='.'):
+	fname_img = os.path.join(path, 'train-images-idx3-ubyte')
+
+	fimg = open(fname_img, 'rb')
+	magic_nr, size, rows, cols = struct.unpack(">IIII", fimg.read(16))
+	img = pyarray("B", fimg.read())
+	fimg.close()
+
+	ind = [ k for k in range(size) ]
+
+	N = len(ind)
+
+
+	images = zeros((N, rows, cols), dtype=uint8)
+	for i in range(len(ind)):
+		images[i] = array(img[ind[i]*rows*cols : (ind[i]+1)*rows*cols ]).reshape((rows, cols))
+
+	return images, size
+
+def saveIndividuals():
+	images, size = load_mnist_unlabeled('training')
 	print images.shape
-	#for i in xrange(0,500,28):
-	#    for j in xrange(0,500,28):
-			#if( i != 0):
-			#	if ( (i * 28) % 1120  == 0 ):
-			#		y += 28
-			#if( (i*40+j) < len(images) ):
-			#im = Image.fromarray(images[i*28+j])
-			#largeImage.paste(im, (i,j))
-
-	for i in range(len(images)):
-		y = int(i/sqrt(len(images)))
-		x = int(i%int(sqrt(len(images))))
-		#print x
+	for i in range(size):
 		im = Image.fromarray(images[i])
-		largeImage.paste(im, (x*28, y*28))
+		im.save("numbers/img"+str(i)+".jpg")
 
-	largeImage.show()
-	largeImage.save("sheets/"+str(num)+".jpg")
+def saveSheets():
+	for num in range(10):
+		images, labels = load_mnist('training', digits=[num])
+
+		#for i in range(60000):
+		#	im = Image.fromarray(images[i])
+		#	im.save("sheets/img"+str(i)+".jpg")
+		largeImage = Image.new("L", (2500,2500))
+		y = 0
+		print images.shape
+
+		for i in range(len(images)):
+			y = int(i/sqrt(len(images)))
+			x = int(i%int(sqrt(len(images))))
+			#print x
+			im = Image.fromarray(images[i])
+			largeImage.paste(im, (x*28, y*28))
+
+		largeImage.show()
+		largeImage.save("sheets/"+str(num)+".jpg")
+
+
+saveIndividuals()
+
 
 
